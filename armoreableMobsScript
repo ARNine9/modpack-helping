@@ -4,9 +4,8 @@ I created a python script that creates several groups of armor automatically, fo
 
 My script can only select 1 enchantment per armor, but I can update later.
 
-The script is in python, to use it create a file with the extension ".py" and copy the code below in the created file.
-´´´a´´´
-```a```
+The script is in python, to use it create a file with the extension ".py" and copy the code below in the created file:
+
 # Imports
 import random
 
@@ -35,6 +34,7 @@ def armor_enchant():
      enchant = ""
      enchant_value = random.randint(1,100)
 
+     # Chance of having or not having an enchantment on the armor (default = 20%)
      if enchant_value > 80:
           enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,4)) + ' as short, id: "' + random.choice(armor_enchants) + '" as string}]})'
 
@@ -45,7 +45,8 @@ def held_enchant():
      armor_group += 1
      enchant = ""
      enchant_value = random.randint(1,100)
-
+     
+     # Chance of having or not having an enchantment on the weapon (default = 10%)
      if enchant_value > 90:
           enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,9)) + ' as short, id: "' + random.choice(held_enchants) + '" as string}]})'
 
@@ -54,9 +55,11 @@ def held_enchant():
 # Generator
 for item in mobs:
      # Your Custom Path
-     op = open(f"C:/Users/Admin/curseforge/minecraft/Instances/aaaa/scripts/craftTweaker/armoreableMobs/mob{mob_value + 1}.zs", "w")
+     op = open(f"C:/Users/Admin/curseforge/minecraft/Instances/YourPackName/scripts/armoreableMobs/mob{mob_value + 1}.zs", "w")
      # 50 Armor groups for one mob in list 
      op.write(f"""import mods.armoreablemods.ArmorGroup;
+
+     # You don't need to read any further from here.
 
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
