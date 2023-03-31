@@ -460,6 +460,5 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
      .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
-     bananas
 """)
      mob_value += 1
