@@ -33,8 +33,8 @@ def armor_enchant():
      enchant = ""
      enchant_value = random.randint(1,100)
 
-     # Chance of having or not having an enchantment on the armor (default = 20%)
-     if enchant_value > 80:
+     # Chance of having or not having an enchantment on the armor (default = 40%)
+     if enchant_value > 60:
           enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,4)) + ' as short, id: "' + random.choice(armor_enchants) + '" as string}]})'
 
      return enchant
@@ -45,8 +45,8 @@ def held_enchant():
      enchant = ""
      enchant_value = random.randint(1,100)
      
-     # Chance of having or not having an enchantment on the weapon (default = 10%)
-     if enchant_value > 90:
+     # Chance of having or not having an enchantment on the weapon (default = 30%)
+     if enchant_value > 70:
           enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,9)) + ' as short, id: "' + random.choice(held_enchants) + '" as string}]})'
 
      return enchant
@@ -65,8 +65,8 @@ for item in mobs:
                enchant = ""
                enchant_value = random.randint(1,100)
 
-               # Chance of having or not having an enchantment on the weapon (default = 10%)
-               if enchant_value > 90:
+               # Chance of having or not having an enchantment on the weapon (default = 50%)
+               if enchant_value > 50:
                     enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,4)) + ' as short, id: "' + random.choice(bow_enchants) + '" as string}]})'
 
                return enchant
