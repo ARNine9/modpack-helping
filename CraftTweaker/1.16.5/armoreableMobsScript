@@ -1,10 +1,8 @@
 With "Armoreable Mobs", you can set any item to any entity when spawned using CraftTweaker.
-
 I created a python script that creates several groups of armor automatically, for each mob you put on the list, it will create 50 groups of armor, with a chance of having enchantments or not.
-
 My script can only select 1 enchantment per armor, but I can update later.
-
 The script is in python, to use it create a file with the extension ".py" and copy the code below in the created file:
+
 
 # Imports
 import random
@@ -12,6 +10,7 @@ import random
 # Place your enchantments following this format: ["minecraft:protection", "minecraft:blast_protection"]
 armor_enchants = []
 held_enchants = []
+bow_enchants = []
 
 # Enter your items following this format: ["<item:minecraft:diamond_helmet>", "<item:minecraft:iron_helmet>"]
 helmets = []
@@ -54,12 +53,30 @@ def held_enchant():
 
 # Generator
 for item in mobs:
+
+     # If the skeleton (or any other mob that uses ranged weapons) is on your list leave it, if not delete until the warning
+     if item == "minecraft:skeleton":
+
+          # Skeleton Weapons - Enter your items following this format: ["<item:minecraft:bow>", "<item:minecraft:crossbow>"]
+          hand = []
+
+          def held_enchant():
+
+               enchant = ""
+               enchant_value = random.randint(1,100)
+
+               # Chance of having or not having an enchantment on the weapon (default = 10%)
+               if enchant_value > 90:
+                    enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,4)) + ' as short, id: "' + random.choice(bow_enchants) + '" as string}]})'
+
+               return enchant
+     # Delete up to here!
+          
      # Your Custom Path
      op = open(f"C:/Users/Admin/curseforge/minecraft/Instances/YourPackName/scripts/armoreableMobs/mob{mob_value + 1}.zs", "w")
-     # 50 Armor groups for one mob in list 
+     
+     # 50 Armor groups for one mob in list - You don't need to read any further from here.
      op.write(f"""import mods.armoreablemods.ArmorGroup;
-
-     # You don't need to read any further from here.
 
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
