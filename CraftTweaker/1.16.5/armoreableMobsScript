@@ -1,89 +1,95 @@
-With "Armoreable Mobs", you can set any item to any entity when spawned using CraftTweaker.
-I created a python script that creates several groups of armor automatically, for each mob you put on the list, it will create 50 groups of armor, with a chance of having enchantments or not.
-My script can only select 1 enchantment per armor, but I can update later.
-The script is in python, to use it create a file with the extension ".py" and copy the code below in the created file:
+
+##########################################################################################################################################################################################################
+##                                                                                                                                                                                                      ##
+##  With "Armoreable Mobs", you can set any item to any entity when spawned using CraftTweaker.                                                                                                         ##
+##  I created a script in python that creates several groups of armor automatically, for each mob you put on the list, it will create 50 groups of armor, with a chance of having enchantments or not.  ##
+##  My script can only select 1 enchantment per armor, but I can update later.                                                                                                                          ##
+##  The script is in python, to use it create a file with the extension ".py" and copy this file and paste it in the file you created.                                                                  ##
+##                                                                                                                                                                                                      ##
+##########################################################################################################################################################################################################
 
 
-# Imports
-import random
 
-# Place your enchantments following this format: ["minecraft:protection", "minecraft:blast_protection"]
+
+
+# Lists -
+# Enchantments | e.g. ["minecraft:knockback", "minecraft:sharpness"]
 armor_enchants = []
-held_enchants = []
-bow_enchants = []
+weapon_enchants = []
 
-# Enter your items following this format: ["<item:minecraft:diamond_helmet>", "<item:minecraft:iron_helmet>"]
+# Armors | e.g. ["<item:minecraft:iron_helmet>", "<item:minecraft:diamond_leggings>"]
 helmets = []
 chestplates = []
 leggings = []
 boots = []
 
-hand = []
+# Weapons | e.g. ["<item:minecraft:iron_sword>", "<item:minecraft:diamond_axe>"]
+weapons = []
 
-# Enter your mobs following this format: ["minecraft:zombie", "minecraft:skeleton"]
+# Mobs | e.g. ["minecraft:zombie", "minecraft:skeleton"]
 mobs = []
 
-# Others (Ignore it)
+# Values -
+# Enchantments Percent - Leave the value at 0 if you want to leave the default value.
+default_enchants_percent = 50
+
+armor_enchants_percent = 0
+weapon_enchants_percent = 0
+
+# Path where scripts will be saved - (default = C:/Users/Admin/curseforge/minecraft/Instances/PackName/scripts)
+# Note, replace all '\' with '/'
+path = ""
+
+
+
+
+
+#####################################################
+#                                                   #
+#  End of what you need to know. ignore from here.  #
+#                                                   #
+#####################################################
+
+
+
+
+
+
+
+
+
+
+if armor_enchants_percent == 0:
+     armor_enchants_percent = default_enchants_percent
+if weapon_enchants_percent == 0:
+     weapon_enchants_percent = default_enchants_percent
+import random
 mob_value = 0
-
 armor_group = 1
-
 def armor_enchant():
-
      enchant = ""
      enchant_value = random.randint(1,100)
-
-     # Chance of having or not having an enchantment on the armor (default = 40%)
-     if enchant_value > 60:
+     if enchant_value <= armor_enchants_percent:
           enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,4)) + ' as short, id: "' + random.choice(armor_enchants) + '" as string}]})'
-
      return enchant
-
-def held_enchant():
+def weapon_enchant():
      global armor_group
      armor_group += 1
      enchant = ""
      enchant_value = random.randint(1,100)
-     
-     # Chance of having or not having an enchantment on the weapon (default = 30%)
-     if enchant_value > 70:
-          enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,9)) + ' as short, id: "' + random.choice(held_enchants) + '" as string}]})'
-
+     if enchant_value <= weapon_enchants_percent:
+          enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,9)) + ' as short, id: "' + random.choice(weapon_enchants) + '" as string}]})'
      return enchant
-
-# Generator
 for item in mobs:
-
-     # If the skeleton (or any other mob that uses ranged weapons) is on your list leave it, if not delete until the warning
-     if item == "minecraft:skeleton":
-
-          # Skeleton Weapons - Enter your items following this format: ["<item:minecraft:bow>", "<item:minecraft:crossbow>"]
-          hand = []
-
-          def held_enchant():
-
-               enchant = ""
-               enchant_value = random.randint(1,100)
-
-               # Chance of having or not having an enchantment on the weapon (default = 50%)
-               if enchant_value > 50:
-                    enchant = '.withTag({RepairCost: ' + str(random.randint(1,4)) +' as int, Enchantments: [{lvl: ' + str(random.randint(1,4)) + ' as short, id: "' + random.choice(bow_enchants) + '" as string}]})'
-
-               return enchant
-     # Delete up to here!
-          
-     # Your Custom Path
-     op = open(f"C:/Users/Admin/curseforge/minecraft/Instances/YourPackName/scripts/armoreableMobs/mob{mob_value + 1}.zs", "w")
-     
-     # 50 Armor groups for one mob in list - You don't need to read any further from here.
-     op.write(f"""import mods.armoreablemods.ArmorGroup;
+     ph = open(f"{path}/armoreableMobs/mob{mob_value + 1}Type1.zs", "w")
+     ph.write(f"""import mods.armoreablemods.ArmorGroup;
 
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
 
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -91,7 +97,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -99,7 +105,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -107,7 +113,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -115,7 +121,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -123,7 +129,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -131,7 +137,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -139,7 +145,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -147,7 +153,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -155,7 +161,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -163,7 +169,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
 
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -171,7 +177,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -179,7 +185,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -187,7 +193,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -195,7 +201,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -203,7 +209,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -211,7 +217,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -219,7 +225,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -227,7 +233,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -235,7 +241,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -243,7 +249,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
 
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -251,7 +257,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -259,7 +265,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -267,7 +273,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -275,7 +281,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -283,7 +289,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -291,7 +297,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -299,7 +305,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -307,7 +313,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -315,7 +321,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -323,7 +329,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
 
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -331,7 +337,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -339,7 +345,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -347,7 +353,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -355,7 +361,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -363,7 +369,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -371,7 +377,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -379,7 +385,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -387,7 +393,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -395,7 +401,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -403,7 +409,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -411,7 +417,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -419,7 +425,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -427,7 +433,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -435,7 +441,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -443,7 +449,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -451,7 +457,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -459,7 +465,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -467,7 +473,7 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
      
 new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
@@ -475,7 +481,407 @@ new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
      .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
      .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
      .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
-     .inSlot(<equipmentslottype:mainhand>, {random.choice(hand)}{held_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
+     .register(<entitytype:{mobs[mob_value]}>);
+     
+new ArmorGroup("mob{mob_value + 1}_group{armor_group}")
+     .inSlot(<equipmentslottype:head>, {random.choice(helmets)}{armor_enchant()})
+     .inSlot(<equipmentslottype:chest>, {random.choice(chestplates)}{armor_enchant()})
+     .inSlot(<equipmentslottype:legs>, {random.choice(leggings)}{armor_enchant()})
+     .inSlot(<equipmentslottype:feet>, {random.choice(boots)}{armor_enchant()})
+     .inSlot(<equipmentslottype:mainhand>, {random.choice(weapons)}{weapon_enchant()})
      .register(<entitytype:{mobs[mob_value]}>);
 """)
      mob_value += 1
